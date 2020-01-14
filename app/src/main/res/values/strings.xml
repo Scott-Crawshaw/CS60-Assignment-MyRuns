@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">MyRuns</string>
+    <string name="profile_photo">Profile Photo</string>
+    <string name="change">Change</string>
+    <string name="name">Name</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="email">Email</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="phone">Phone</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="sex">Sex</string>
+    <string name="female">Female</string>
+    <string name="male">Male</string>
+    <string name="class_text">Class</string>
+    <string name="enter_your_class_year">Enter your class year</string>
+    <string name="major">Major</string>
+    <string name="enter_your_major">Enter your major</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="profilePref">profilePrefs</string>
+    <string name="nameKey">nameKey</string>
+    <string name="emailKey">emailKey</string>
+    <string name="phoneKey">phoneKey</string>
+    <string name="sexKey">sexKey</string>
+    <string name="classKey">classKey</string>
+    <string name="majorKey">majorKey</string>
+
+
+
+
+
+
+
+
+
+</resources>
