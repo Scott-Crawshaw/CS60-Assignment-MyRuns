@@ -1,0 +1,46 @@
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:key="account_category"
+        app:title="Account Preferences">
+
+        <Preference
+            app:key="profile"
+            app:title="Name, Email, Class, etc"
+            app:summary="User Profile"/>
+
+        <CheckBoxPreference
+            app:key="privacy"
+            app:title="Privacy Setting"
+            app:summary="Posting your records anonymously"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="additional_category"
+        app:title="Additional Settings">
+
+        <Preference
+            app:key="unit"
+            app:title="Unit Preference"
+            app:summary="Select the units"/>
+
+        <Preference
+            app:key="comments"
+            app:title="Comments"
+            app:summary="Please enter your comments"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="misc_category"
+        app:title="Misc.">
+
+        <Preference
+            app:key="webpage"
+            app:title="Webpage"
+            app:summary="http://web.cs.dartmouth.edu/"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

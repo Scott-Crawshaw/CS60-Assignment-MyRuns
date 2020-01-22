@@ -1,4 +1,48 @@
 <resources>
+
+    <string-array name="input_array">
+        <item>Manual Entry</item>
+        <item>GPS</item>
+        <item>Automatic</item>
+    </string-array>
+
+    <string-array name="activity_array">
+        <item>Runnning</item>
+        <item>Walking</item>
+        <item>Standing</item>
+        <item>Cycling</item>
+        <item>Hiking</item>
+        <item>Downhill Skiing</item>
+        <item>Cross-Country Skiing</item>
+        <item>Snowboarding</item>
+        <item>Skating</item>
+        <item>Swimming</item>
+        <item>Mountain Biking</item>
+        <item>Wheelchair</item>
+        <item>Elliptical</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="manual_array">
+        <item>Date</item>
+        <item>Time</item>
+        <item>Duration</item>
+        <item>Distance</item>
+        <item>Calories</item>
+        <item>Heart Rate</item>
+        <item>Comment</item>
+    </string-array>
+
+    <string-array name="units">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+
+    <string-array name="camOptions">
+        <item>Open Camera</item>
+        <item>Select from Gallery</item>
+    </string-array>
+
     <string name="app_name">MyRuns</string>
     <string name="profile_photo">Profile Photo</string>
     <string name="change">Change</string>
@@ -24,13 +68,13 @@
     <string name="sexKey">sexKey</string>
     <string name="classKey">classKey</string>
     <string name="majorKey">majorKey</string>
-
-
-
-
-
-
-
+    <string name="title_activity_main">My Runs</string>
+    <string name="input_type">Input Type</string>
+    <string name="activity_type">Activity Type</string>
+    <string name="start">START</string>
+    <string name="sync">SYNC</string>
+    <string name="ok">Ok</string>
+    <string name="settingsPref">settingsPref</string>
 
 
 </resources>

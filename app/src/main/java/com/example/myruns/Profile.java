@@ -14,9 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -63,7 +65,7 @@ public class Profile extends AppCompatActivity {
                 || checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 0);
         }
-
+        Log.d("scott", "helllllllll ya");
         loadProfile(null);
     }
 
@@ -86,6 +88,17 @@ public class Profile extends AppCompatActivity {
 
     }
 
+    public void killActivity(View view){
+        finish();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        saveProfile(null);
+        Log.d("scott", "onDestroy" + profilePicFile);
+    }
+
     public void loadProfile(View view){
         SharedPreferences profilePrefs = getSharedPreferences(getString(R.string.profilePref), MODE_PRIVATE);
 
@@ -102,6 +115,7 @@ public class Profile extends AppCompatActivity {
         if(imgPath != null) {
             profilePic.setImageBitmap(BitmapFactory.decodeFile(imgPath));
             profilePicFile = imgPath;
+            Log.d("scott", "load" + profilePicFile);
         }
         else{
             profilePic.setImageResource(R.drawable.default_profile_picture);
@@ -111,20 +125,36 @@ public class Profile extends AppCompatActivity {
 
 
     public void changeImage(View view){
-        Intent cameraActivity = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        ContentValues values = new ContentValues(1);
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
-        ImageCaptureUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        Log.d("scott", ImageCaptureUri.getPath());
-        cameraActivity.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,
-                ImageCaptureUri);
-        cameraActivity.putExtra("return-data", true);
-        startActivityForResult(cameraActivity, CAMERA_REQUEST_CODE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Pick Profile Picture");
+        builder.setItems(R.array.camOptions, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                if(which == 0){
+                    Intent cameraActivity = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    ContentValues values = new ContentValues(1);
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+                    ImageCaptureUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    cameraActivity.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,
+                            ImageCaptureUri);
+                    cameraActivity.putExtra("return-data", true);
+                    startActivityForResult(cameraActivity, CAMERA_REQUEST_CODE);
+                }
+                else if(which == 1){
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                    photoPickerIntent.setType("image/*");
+                    startActivityForResult(photoPickerIntent, PIC_CROP_CODE);
+                }
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK)
         {
             Intent cropIntent = new Intent("com.android.camera.action.CROP");
@@ -147,17 +177,16 @@ public class Profile extends AppCompatActivity {
             File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
             File file = new File(directory, "profilePic.jpg");
             profilePicFile = file.getPath();
-            if (!file.exists()) {
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(file);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    fos.flush();
-                    fos.close();
-                } catch (java.io.IOException e) {
-                    e.printStackTrace();
-                }
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                fos.flush();
+                fos.close();
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
             }
+
         }
 
     }
