@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class ExerciseEntry {
     private Long id;
@@ -54,6 +55,17 @@ public class ExerciseEntry {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(dateTime.getTime());
     }
 
+    public void setDateTimeSQL(String dateTimeString){
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = sdf.parse(dateTimeString);
+            dateTime = Calendar.getInstance();
+            dateTime.setTime(date);
+        }
+        catch (Exception e){
+            dateTime = Calendar.getInstance();
+        }
+    }
 
     public void setDateTime(Calendar dateTime) {
         this.dateTime = dateTime;

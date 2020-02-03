@@ -2,6 +2,7 @@ package com.example.myruns;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -76,10 +77,47 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
     // Query a specific entry by its index.
     public ExerciseEntry fetchEntryByIndex(long rowId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_EXERCISE + " where _id = " + String.valueOf(rowId), null);
+        ExerciseEntry entry = null;
+        if (cursor.moveToFirst()){
+            entry = sqlToObject(cursor);
+        }
+        db.close();
+        return entry;
+    }
+
+    private ExerciseEntry sqlToObject(Cursor sql){
+        ExerciseEntry entry = new ExerciseEntry();
+        entry.setId(sql.getLong(0));
+        entry.setInputType(sql.getInt(1));
+        entry.setActivityType(sql.getInt(2));
+        entry.setDateTimeSQL(sql.getString(3));
+        entry.setDuration(sql.getInt(4));
+        entry.setDistance(sql.getInt(5));
+        entry.setAvgPace(sql.getFloat(6));
+        entry.setAvgSpeed(sql.getFloat(7));
+        entry.setCalorie(sql.getInt(8));
+        entry.setClimb(sql.getFloat(9));
+        entry.setHeartRate(sql.getInt(10));
+        entry.setComment(sql.getString(11));
+        entry.setPrivacy(sql.getInt(12));
+        entry.setLocationList(null);
+        return entry;
     }
 
     // Query the entire table, return all rows
     public ArrayList<ExerciseEntry> fetchEntries() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + TABLE_EXERCISE, null);
+        ArrayList<ExerciseEntry> entries = new ArrayList<>();
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()){
+            entries.add(sqlToObject(cursor));
+            cursor.moveToNext();
+        }
+        db.close();
+        return entries;
     }
 
 }
