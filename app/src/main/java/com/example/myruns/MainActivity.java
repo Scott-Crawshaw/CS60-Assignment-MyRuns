@@ -1,5 +1,6 @@
 package com.example.myruns;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SharedPreferences prefs = getSharedPreferences("manualEntry", MODE_PRIVATE);
+        prefs.edit().clear().apply();
+
         startFragment = new StartFragment();
         historyFragment = new HistoryFragment();
         settingsFragment = new SettingsFragment();
@@ -40,9 +44,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+
     }
 
-    public void entryMode(View view){
-        startFragment.entryMode();
-    }
 }

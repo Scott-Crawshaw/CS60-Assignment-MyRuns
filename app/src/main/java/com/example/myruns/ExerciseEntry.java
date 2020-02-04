@@ -1,7 +1,11 @@
 package com.example.myruns;
 
+import android.content.Context;
+
 import com.google.android.gms.maps.model.LatLng;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,6 +26,16 @@ public class ExerciseEntry {
     private int privacy;
     private String comment;       // Comments
     private ArrayList<LatLng> locationList; // Location list
+    private Context context;
+
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
 
     public Long getId() {
         return id;
@@ -149,5 +163,33 @@ public class ExerciseEntry {
 
     public void setPrivacy(int privacy) {
         this.privacy = privacy;
+    }
+
+    public String stringLine1(){
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss MMM dd YYYY");
+        return context.getResources().getStringArray(R.array.input_array)[inputType] + ": " + context.getResources().getStringArray(R.array.activity_array)[activityType]
+                + ", " + sdf.format(dateTime.getTime());
+    }
+
+    public String stringLine2Miles(){
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+        if(duration != 0) {
+            return df.format(distance) + " Miles, " + duration + "mins 0secs";
+        }
+        else{
+            return df.format(distance) + " Miles, 0secs";
+        }
+    }
+
+    public String stringLine2KM(){
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+        if(duration != 0) {
+            return df.format((distance * 1.60934)) + " KM, " + duration + "mins 0secs";
+        }
+        else{
+            return df.format((distance * 1.60934)) + " KM, 0secs";
+        }
     }
 }

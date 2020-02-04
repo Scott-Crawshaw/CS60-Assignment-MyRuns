@@ -5,7 +5,10 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.text.InputType;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
 
 public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.ViewHolder> {
     private String[] mDataset;
@@ -39,21 +47,50 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.ViewHold
 
         @Override
         public void onClick(View view){
-            String chosenOption = textView.getText().toString();
+            final String chosenOption = textView.getText().toString();
+            int hour, minute, year, month, day;
+            String content;
+            SharedPreferences prefs = context.getSharedPreferences("manualEntry", Context.MODE_PRIVATE);
+            Date date = new Date();
+            LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            hour = prefs.getInt("hour", date.getHours());
+            minute = prefs.getInt("minute", date.getMinutes());
+            year = prefs.getInt("year", localDate.getYear());
+            month = prefs.getInt("month", localDate.getMonth().getValue()-1);
+            day = prefs.getInt("day", localDate.getDayOfMonth());
+            content = prefs.getString(chosenOption, "");
 
+            final DatePickerDialog datePicker = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    SharedPreferences prefs = context.getSharedPreferences("manualEntry", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("year", year);
+                    editor.putInt("month", month);
+                    editor.putInt("day", dayOfMonth);
+                    editor.commit();
+                }
+            }, year, month, day);
+            final TimePickerDialog timePicker = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    SharedPreferences prefs = context.getSharedPreferences("manualEntry", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("hour", hourOfDay);
+                    editor.putInt("minute", minute);
+                    editor.commit();
+                }
+            }, hour, minute, DateFormat.is24HourFormat(context));
+            final EditText input = new EditText(context);
             if(chosenOption.equals("Date")){
-                DatePickerDialog picker = new DatePickerDialog(context);
-                picker.show();
-
+                datePicker.show();
             }
             else if(chosenOption.equals("Time")){
-                TimePickerDialog picker = new TimePickerDialog(context,null,0,0,false);
-                picker.show();
+                timePicker.show();
             }
             else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle(textView.getText());
-                EditText input = new EditText(context);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.MATCH_PARENT);
@@ -65,11 +102,19 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.ViewHold
                 } else {
                     input.setInputType(InputType.TYPE_CLASS_NUMBER);
                 }
+                input.setText(content);
                 builder.setView(input);
 
 
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        SharedPreferences prefs = context.getSharedPreferences("manualEntry", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        String text = input.getText().toString();
+                        if (text.equals("")){text=null;}
+                        editor.putString(chosenOption, text);
+                        editor.commit();
+
                         dialog.cancel();
                     }
                 });

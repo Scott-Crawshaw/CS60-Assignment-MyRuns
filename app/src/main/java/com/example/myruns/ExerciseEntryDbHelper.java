@@ -12,7 +12,8 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_EXERCISE = "exercise";
     private static final String DATABASE_NAME = "exercise.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
+    private Context context;
 
     private final String CREATE_TABLE_ENTRIES = "CREATE TABLE IF NOT EXISTS "+TABLE_EXERCISE+" ("+
             "_id INTEGER PRIMARY KEY AUTOINCREMENT,"+
@@ -32,6 +33,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
     public ExerciseEntryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
     }
 
     @Override
@@ -94,7 +96,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         entry.setActivityType(sql.getInt(2));
         entry.setDateTimeSQL(sql.getString(3));
         entry.setDuration(sql.getInt(4));
-        entry.setDistance(sql.getInt(5));
+        entry.setDistance(sql.getFloat(5));
         entry.setAvgPace(sql.getFloat(6));
         entry.setAvgSpeed(sql.getFloat(7));
         entry.setCalorie(sql.getInt(8));
@@ -103,6 +105,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         entry.setComment(sql.getString(11));
         entry.setPrivacy(sql.getInt(12));
         entry.setLocationList(null);
+        entry.setContext(context);
         return entry;
     }
 

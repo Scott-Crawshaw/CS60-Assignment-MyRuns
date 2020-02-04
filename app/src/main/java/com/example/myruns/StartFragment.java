@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 
@@ -34,18 +35,26 @@ public class StartFragment extends Fragment {
         activityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         activitySpinner.setAdapter(activityAdapter);
 
+        Button start = view.findViewById(R.id.start);
+        start.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v)
+            {
+                Spinner inputSpinner = view.findViewById(R.id.input_spinner);
+                Spinner activitySpinner = view.findViewById(R.id.activity_spinner);
+
+                if(inputSpinner.getSelectedItemPosition() == 0){
+                    Intent manualEntry = new Intent(getActivity(), Manual.class);
+                    manualEntry.putExtra("activity", activitySpinner.getSelectedItemPosition());
+                    startActivity(manualEntry);
+                }
+                else{
+                    Intent map = new Intent(getActivity(), MapActivity.class);
+                    startActivity(map);
+                }
+            }
+        });
+
         return view;
     }
 
-    public void entryMode(){
-        Spinner inputSpinner = view.findViewById(R.id.input_spinner);
-        if(inputSpinner.getSelectedItemPosition() == 0){
-            Intent manualEntry = new Intent(getActivity(), Manual.class);
-            startActivity(manualEntry);
-        }
-        else{
-            Intent map = new Intent(getActivity(), MapActivity.class);
-            startActivity(map);
-        }
-    }
 }

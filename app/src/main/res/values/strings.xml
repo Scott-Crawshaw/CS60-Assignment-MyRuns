@@ -7,7 +7,7 @@
     </string-array>
 
     <string-array name="activity_array">
-        <item>Runnning</item>
+        <item>Running</item>
         <item>Walking</item>
         <item>Standing</item>
         <item>Cycling</item>
@@ -69,12 +69,17 @@
     <string name="classKey">classKey</string>
     <string name="majorKey">majorKey</string>
     <string name="title_activity_main">My Runs</string>
-    <string name="input_type">Input Type</string>
-    <string name="activity_type">Activity Type</string>
     <string name="start">START</string>
     <string name="sync">SYNC</string>
     <string name="ok">Ok</string>
     <string name="settingsPref">settingsPref</string>
+    <string name="heart_rate">Heart Rate</string>
+    <string name="calories">Calories</string>
+    <string name="distance">Distance</string>
+    <string name="duration">Duration</string>
+    <string name="date_and_time">Date and Time</string>
+    <string name="activity_type">Activity Type</string>
+    <string name="input_type">Input Type</string>
 
 
 </resources>
