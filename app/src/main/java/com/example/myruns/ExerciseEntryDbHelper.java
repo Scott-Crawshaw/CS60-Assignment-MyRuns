@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_EXERCISE = "exercise";
     private static final String DATABASE_NAME = "exercise.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private Context context;
 
     private final String CREATE_TABLE_ENTRIES = "CREATE TABLE IF NOT EXISTS "+TABLE_EXERCISE+" ("+
@@ -73,24 +74,25 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     // Remove an entry by giving its index
     public void removeEntry(long rowIndex) {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_EXERCISE, "_id =" + rowIndex, null);
+        db.delete(TABLE_EXERCISE, "ROWID =" + rowIndex, null);
         db.close();
     }
 
     // Query a specific entry by its index.
     public ExerciseEntry fetchEntryByIndex(long rowId) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.rawQuery("select * from " + TABLE_EXERCISE + " where _id = " + String.valueOf(rowId), null);
-        ExerciseEntry entry = null;
-        if (cursor.moveToFirst()){
-            entry = sqlToObject(cursor);
-        }
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_EXERCISE + " WHERE ROWID = " + rowId, null);
+        Log.e("scott", "SELECT * FROM " + TABLE_EXERCISE + " WHERE ROWID = " + rowId);
+        ExerciseEntry entry;
+        cursor.moveToFirst();
+        entry = sqlToObject(cursor);
         db.close();
         return entry;
     }
 
     private ExerciseEntry sqlToObject(Cursor sql){
         ExerciseEntry entry = new ExerciseEntry();
+        Log.e("scottTest", sql.getLong(0) + "");
         entry.setId(sql.getLong(0));
         entry.setInputType(sql.getInt(1));
         entry.setActivityType(sql.getInt(2));

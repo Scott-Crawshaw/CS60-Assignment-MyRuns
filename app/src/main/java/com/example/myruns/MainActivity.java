@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     StartFragment startFragment;
     HistoryFragment historyFragment;
     SettingsFragment settingsFragment;
+    SectionsPagerAdapter sectionsPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +40,36 @@ public class MainActivity extends AppCompatActivity {
         fragments.add(historyFragment);
         fragments.add(settingsFragment);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fragments);
+        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), fragments);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
+        tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 1) {
+                    ((HistoryFragment) sectionsPagerAdapter.fragments.get(1)).updateData();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+    }
+
+    public void onResume(){
+        super.onResume();
+        ((HistoryFragment) sectionsPagerAdapter.fragments.get(1)).updateData();
     }
 
 }

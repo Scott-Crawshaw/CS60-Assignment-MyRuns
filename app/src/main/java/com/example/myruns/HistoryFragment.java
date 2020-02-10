@@ -37,4 +37,10 @@ public class HistoryFragment extends Fragment {
 
     }
 
+    public void updateData(){
+        if(workoutsAdapter != null) {
+            workoutsAdapter.updateData();
+        }
+    }
+
 }

@@ -100,7 +100,7 @@ public class OptionsAdapter extends RecyclerView.Adapter<OptionsAdapter.ViewHold
                     input.setInputType(InputType.TYPE_CLASS_TEXT);
                     input.setLines(3);
                 } else {
-                    input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                    input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
                 }
                 input.setText(content);
                 builder.setView(input);

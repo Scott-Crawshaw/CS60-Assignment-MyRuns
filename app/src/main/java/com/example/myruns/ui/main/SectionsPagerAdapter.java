@@ -1,11 +1,10 @@
 package com.example.myruns.ui.main;
 
-import androidx.annotation.Nullable;
+import android.view.ViewGroup;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-
-import com.example.myruns.HistoryFragment;
 
 import java.util.ArrayList;
 
@@ -15,7 +14,7 @@ import java.util.ArrayList;
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    private ArrayList<Fragment> fragments;
+    public ArrayList<Fragment> fragments;
 
     public SectionsPagerAdapter(FragmentManager fm, ArrayList<Fragment> fragments){
         super(fm);

@@ -2,8 +2,9 @@ package com.example.myruns;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +12,13 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHolder> {
     public Context context;
-    public ArrayList<ExerciseEntry> data;
+    public static ArrayList<ExerciseEntry> data;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -32,23 +31,38 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
             super(v);
             view = v;
             context = c;
+            view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view){
-
+            Intent display = new Intent(context, DisplayEntryActivity.class);
+            display.putExtra("id", data.get(this.getAdapterPosition()).getId());
+            context.startActivity(display);
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public WorkoutsAdapter(Context c) {
         context = c;
-        data = new ExerciseEntryDbHelper(c).fetchEntries();
-
+        data = new ArrayList<ExerciseEntry>();
+        new getEntriesTask().execute();
     }
 
     public void updateData(){
-        data = new ExerciseEntryDbHelper(context).fetchEntries();
+        new getEntriesTask().execute();
+    }
+
+    private class getEntriesTask extends AsyncTask<Void, Void, ArrayList<ExerciseEntry>> {
+        protected ArrayList<ExerciseEntry> doInBackground(Void... params) {
+            return new ExerciseEntryDbHelper(context).fetchEntries();
+
+        }
+
+        protected void onPostExecute(ArrayList<ExerciseEntry> results) {
+            data = results;
+            notifyDataSetChanged();
+        }
     }
 
     // Create new views (invoked by the layout manager)
@@ -67,7 +81,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        Log.e("scott", "worked");
         ExerciseEntry entry = data.get(position);
         ((TextView)holder.view.findViewById(R.id.firstLine)).setText(entry.stringLine1());
         SharedPreferences settingsPrefs = context.getSharedPreferences(context.getString(R.string.settingsPref), MODE_PRIVATE);
