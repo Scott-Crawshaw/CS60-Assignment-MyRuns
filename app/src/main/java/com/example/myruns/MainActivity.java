@@ -1,12 +1,17 @@
 package com.example.myruns;
 
+import android.Manifest;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
 
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        checkPermission();
 
         SharedPreferences prefs = getSharedPreferences("manualEntry", MODE_PRIVATE);
         prefs.edit().clear().apply();
@@ -71,5 +77,13 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         ((HistoryFragment) sectionsPagerAdapter.fragments.get(1)).updateData();
     }
+
+    public void checkPermission(){
+        if(Build.VERSION.SDK_INT < 23) return;
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    0);
+    }
+
 
 }
