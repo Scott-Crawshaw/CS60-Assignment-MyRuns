@@ -47,6 +47,11 @@ public class StartFragment extends Fragment {
                     manualEntry.putExtra("activity", activitySpinner.getSelectedItemPosition());
                     startActivity(manualEntry);
                 }
+                else if(inputSpinner.getSelectedItemPosition() == 1){
+                    Intent map = new Intent(getActivity(), MapActivity.class);
+                    map.putExtra("activity", activitySpinner.getSelectedItemPosition());
+                    startActivity(map);
+                }
                 else{
                     Intent map = new Intent(getActivity(), MapActivity.class);
                     startActivity(map);

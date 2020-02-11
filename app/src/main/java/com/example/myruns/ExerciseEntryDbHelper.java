@@ -7,13 +7,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_EXERCISE = "exercise";
     private static final String DATABASE_NAME = "exercise.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 8;
     private Context context;
 
     private final String CREATE_TABLE_ENTRIES = "CREATE TABLE IF NOT EXISTS "+TABLE_EXERCISE+" ("+
@@ -30,7 +35,7 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
             "heartrate INTEGER,"+
             "comment TEXT,"+
             "privacy INTEGER,"+
-            "gps_data BLOB );";
+            "gps_data TEXT );";
 
     public ExerciseEntryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -64,8 +69,9 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         contentValues.put("heartrate", entry.getHeartRate());
         contentValues.put("comment", entry.getComment());
         contentValues.put("privacy", entry.getPrivacy());
-        contentValues.put("gps_data", new byte[0]);
-
+        Gson gson = new Gson();
+        String inputString = gson.toJson(entry.getLocationList());
+        contentValues.put("gps_data", inputString);
         long rowID = db.insert(TABLE_EXERCISE, null, contentValues);
         db.close();
         return rowID;
@@ -106,8 +112,11 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
         entry.setHeartRate(sql.getInt(10));
         entry.setComment(sql.getString(11));
         entry.setPrivacy(sql.getInt(12));
-        entry.setLocationList(null);
         entry.setContext(context);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<LatLng>>() {}.getType();
+        ArrayList<LatLng> locs = gson.fromJson(sql.getString(13), type);
+        entry.setLocationList(locs);
         return entry;
     }
 

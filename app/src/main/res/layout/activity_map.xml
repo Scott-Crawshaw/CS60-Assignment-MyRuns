@@ -10,7 +10,7 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        class="com.google.android.gms.maps.SupportMapFragment" >
+        class="com.google.android.gms.maps.MapFragment" >
     </fragment>
 
     <LinearLayout
@@ -55,7 +55,8 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:text="@string/save"
-            android:onClick="killActivity"/>
+            android:id="@+id/saveButtonMap"
+            android:onClick="saveEntry"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -63,6 +64,7 @@
             android:layout_weight="1"
             android:layout_margin="5dp"
             android:text="@string/cancel"
+            android:id="@+id/cancelButtonMap"
             android:onClick="killActivity"/>
 
     </LinearLayout>

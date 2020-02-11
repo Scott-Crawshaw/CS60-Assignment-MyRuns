@@ -32,6 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Profile" />
+        <service android:name=".LocationUpdateService"/>
     </application>
 
 </manifest>

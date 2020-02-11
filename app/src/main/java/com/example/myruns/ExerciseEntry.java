@@ -167,8 +167,14 @@ public class ExerciseEntry {
 
     public String stringLine1(){
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss MMM dd YYYY");
-        return context.getResources().getStringArray(R.array.input_array)[inputType] + ": " + context.getResources().getStringArray(R.array.activity_array)[activityType]
-                + ", " + sdf.format(dateTime.getTime());
+        if(activityType != -1) {
+            return context.getResources().getStringArray(R.array.input_array)[inputType] + ": " + context.getResources().getStringArray(R.array.activity_array)[activityType]
+                    + ", " + sdf.format(dateTime.getTime());
+        }
+        else{
+            return context.getResources().getStringArray(R.array.input_array)[inputType] + ": " + "Unknown"
+                    + ", " + sdf.format(dateTime.getTime());
+        }
     }
 
     public String stringLine2Miles(){

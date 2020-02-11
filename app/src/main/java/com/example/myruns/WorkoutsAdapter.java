@@ -36,9 +36,17 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.ViewHo
 
         @Override
         public void onClick(View view){
-            Intent display = new Intent(context, DisplayEntryActivity.class);
-            display.putExtra("id", data.get(this.getAdapterPosition()).getId());
-            context.startActivity(display);
+            if(data.get(this.getAdapterPosition()).getInputType() == 0) {
+                Intent display = new Intent(context, DisplayEntryActivity.class);
+                display.putExtra("id", data.get(this.getAdapterPosition()).getId());
+                context.startActivity(display);
+            }
+            else{
+                Intent display = new Intent(context, MapActivity.class);
+                display.putExtra("rowID", data.get(this.getAdapterPosition()).getId());
+                display.putExtra("history", true);
+                context.startActivity(display);
+            }
         }
     }
 
