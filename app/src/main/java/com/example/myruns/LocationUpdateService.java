@@ -7,26 +7,32 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-public class LocationUpdateService extends Service implements LocationListener {
+import java.util.concurrent.ArrayBlockingQueue;
+
+public class LocationUpdateService extends Service implements LocationListener, SensorEventListener {
 
     NotificationManager notificationManager;
     LocationManager locationManager;
     MapActivity.LocationHandler locationHandler;
+    public static final String TYPE_KEY = "type";
     public static final String CHANNEL_ID = "notification channel";
     public static final int NOTIFY_ID = 11;
     public static final String LAT_KEY = "lat";
@@ -34,12 +40,20 @@ public class LocationUpdateService extends Service implements LocationListener {
     public static final String SPEED_KEY = "spd";
     public static final String ALT_KEY = "alt";
     public static final String TIME_KEY = "time";
+    public static final int ACCELEROMETER_BUFFER_CAPACITY = 2048;
+    public static final int ACCELEROMETER_BLOCK_CAPACITY = 64;
+    private static ArrayBlockingQueue<Double> mAccBuffer;
+    MapActivity.TypeHandler typeHandler;
+    private Sensor accelerometer;
+    private SensorManager sensorManager;
+    private UpdateLabelTask asyncTask;
 
 
     public void onCreate(){
         super.onCreate();
         notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         showNotification();
+        mAccBuffer = new ArrayBlockingQueue<Double>(ACCELEROMETER_BUFFER_CAPACITY);
 
     }
 
@@ -48,7 +62,15 @@ public class LocationUpdateService extends Service implements LocationListener {
         if(locationManager != null) {
             locationManager.removeUpdates(this);
         }
-        notificationManager.cancel(NOTIFY_ID);
+        if (notificationManager != null) {
+            notificationManager.cancel(NOTIFY_ID);
+        }
+        if (asyncTask != null) {
+            asyncTask.cancel(true);
+        }
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
     }
 
     @Nullable
@@ -98,11 +120,101 @@ public class LocationUpdateService extends Service implements LocationListener {
         return START_NOT_STICKY;
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+            double m = Math.sqrt(event.values[0] * event.values[0] + event.values[1] * event.values[1] + event.values[2] * event.values[2]);
+            try {
+                mAccBuffer.add(new Double(m));
+            } catch (IllegalStateException e) {
+                ArrayBlockingQueue<Double> newBuf = new ArrayBlockingQueue<Double>(mAccBuffer.size() * 2);
+                mAccBuffer.drainTo(newBuf);
+                mAccBuffer = newBuf;
+                mAccBuffer.add(new Double(m));
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    public void initTypeListener() {
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = sensorManager
+                .getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
+        sensorManager.registerListener(this, accelerometer,
+                SensorManager.SENSOR_DELAY_FASTEST);
+        asyncTask = new UpdateLabelTask();
+        asyncTask.execute();
+    }
+
+    private class UpdateLabelTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            int blockSize = 0;
+            FFT fft = new FFT(ACCELEROMETER_BLOCK_CAPACITY);
+            double[] accBlock = new double[ACCELEROMETER_BLOCK_CAPACITY];
+            double[] re = accBlock;
+            double[] im = new double[ACCELEROMETER_BLOCK_CAPACITY];
+            double max;
+
+            while (true) {
+                try {
+                    if (isCancelled() == true) {
+                        return null;
+                    }
+                    Double[] featVect = new Double[ACCELEROMETER_BLOCK_CAPACITY + 1];
+                    int featVectCounter = 0;
+                    accBlock[blockSize++] = mAccBuffer.take().doubleValue();
+
+                    if (blockSize == ACCELEROMETER_BLOCK_CAPACITY) {
+                        blockSize = 0;
+                        max = .0;
+                        for (double val : accBlock) {
+                            if (max < val) {
+                                max = val;
+                            }
+                        }
+
+                        fft.fft(re, im);
+
+                        for (int i = 0; i < re.length; i++) {
+                            double mag = Math.sqrt(re[i] * re[i] + im[i]
+                                    * im[i]);
+                            featVect[featVectCounter] = Double.valueOf(mag);
+                            featVectCounter++;
+                            im[i] = .0;
+                        }
+                        featVect[featVectCounter] = Double.valueOf(max);
+                        int option = (int) WekaClassifier.classify(featVect);
+                        Bundle bundle = new Bundle();
+                        bundle.putInt(TYPE_KEY, option);
+                        Message message = typeHandler.obtainMessage();
+                        message.setData(bundle);
+                        if (typeHandler != null) {
+                            typeHandler.sendMessage(message);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    }
 
     public class locationBinder extends Binder {
         public void setMessageHandler(MapActivity.LocationHandler locHandler){
             locationHandler = locHandler;
             initLocationManager();
+        }
+
+        public void setTypeHandler(MapActivity.TypeHandler tHandler) {
+            typeHandler = tHandler;
+            initTypeListener();
         }
     }
 

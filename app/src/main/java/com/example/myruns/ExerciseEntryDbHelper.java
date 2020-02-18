@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
@@ -88,7 +87,6 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
     public ExerciseEntry fetchEntryByIndex(long rowId) {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_EXERCISE + " WHERE ROWID = " + rowId, null);
-        Log.e("scott", "SELECT * FROM " + TABLE_EXERCISE + " WHERE ROWID = " + rowId);
         ExerciseEntry entry;
         cursor.moveToFirst();
         entry = sqlToObject(cursor);
@@ -98,7 +96,6 @@ public class ExerciseEntryDbHelper extends SQLiteOpenHelper {
 
     private ExerciseEntry sqlToObject(Cursor sql){
         ExerciseEntry entry = new ExerciseEntry();
-        Log.e("scottTest", sql.getLong(0) + "");
         entry.setId(sql.getLong(0));
         entry.setInputType(sql.getInt(1));
         entry.setActivityType(sql.getInt(2));

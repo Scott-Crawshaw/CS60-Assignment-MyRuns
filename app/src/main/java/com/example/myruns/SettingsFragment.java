@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -41,7 +40,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
     @Override
     public boolean onPreferenceClick (Preference preference)
     {
-        Log.d("arrived", "arrived");
         String key = preference.getKey();
         if(key.equals("profile")){
             Intent profile = new Intent(getActivity(), Profile.class);

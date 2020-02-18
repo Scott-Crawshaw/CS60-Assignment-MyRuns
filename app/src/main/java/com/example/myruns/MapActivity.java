@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +20,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -63,12 +61,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     double totalDist;
     int inputType = 1;
     double currCal, currClimb, curSpeed, currDur;
+    int standingCount, walkingCount, runningCount;
     Calendar begin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_map);
         setTitle("Map");
         history = getIntent().getBooleanExtra("history", false);
@@ -226,7 +224,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             currClimb = (alt-startAlt);
             curSpeed = (totalDist/timeElap);
             currDur = (time - startEpoch) / 6e+10;
-            Log.e("scotttime", time + " " + startEpoch);
         }
         else{
             avgSpeedText.setText("Avg Speed: " + 0 + speedSuffix);
@@ -396,6 +393,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LocationUpdateService.locationBinder locationBinder = (LocationUpdateService.locationBinder) service;
         LocationHandler locationHandler = new LocationHandler();
         locationBinder.setMessageHandler(locationHandler);
+        if (inputType == 2) {
+            TypeHandler typeHandler = new TypeHandler();
+            locationBinder.setTypeHandler(typeHandler);
+        }
     }
 
     @Override
@@ -412,6 +413,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             double alt = bundle.getDouble(LocationUpdateService.ALT_KEY);
             long time = bundle.getLong(LocationUpdateService.TIME_KEY);
             updateMap(new LatLng(lat, lng), speed, alt, time);
+        }
+    }
+
+    public class TypeHandler extends Handler {
+        public void handleMessage(Message message) {
+            Bundle bundle = message.getData();
+            int type = bundle.getInt(LocationUpdateService.TYPE_KEY);
+            if (type == 0) {
+                standingCount++;
+            }
+            if (type == 1) {
+                walkingCount++;
+            }
+            if (type == 2) {
+                runningCount++;
+            }
+
+            if (standingCount > walkingCount && standingCount > runningCount) {
+                activityInt = 0;
+            }
+            if (walkingCount > standingCount && walkingCount > runningCount) {
+                activityInt = 1;
+            }
+            if (runningCount > walkingCount && runningCount > standingCount) {
+                activityInt = 2;
+            }
+            activity = getResources().getStringArray(R.array.activity_array)[activityInt];
+            typeText.setText("Type: " + activity);
         }
     }
 

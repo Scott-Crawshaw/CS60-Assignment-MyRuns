@@ -10,8 +10,6 @@ https://www.cs.dartmouth.edu/~xingdong/Teaching/CS65/web/cs65.html
 
 package com.example.myruns;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,13 +27,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -65,7 +65,6 @@ public class Profile extends AppCompatActivity {
                 || checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 0);
         }
-        Log.d("scott", "helllllllll ya");
         loadProfile(null);
     }
 
@@ -96,7 +95,6 @@ public class Profile extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         saveProfile(null);
-        Log.d("scott", "onDestroy" + profilePicFile);
     }
 
     public void loadProfile(View view){
@@ -115,7 +113,6 @@ public class Profile extends AppCompatActivity {
         if(imgPath != null) {
             profilePic.setImageBitmap(BitmapFactory.decodeFile(imgPath));
             profilePicFile = imgPath;
-            Log.d("scott", "load" + profilePicFile);
         }
         else{
             profilePic.setImageResource(R.drawable.default_profile_picture);
